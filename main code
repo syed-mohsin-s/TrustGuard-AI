@@ -1,0 +1,45 @@
+#DATA CLEANINNING 
+# Import necessary libraries
+import pandas as pd
+import re
+from imblearn.over_sampling import SMOTE
+
+# Load datasets (example: toxic comments and fake news)
+df_toxic = pd.read_csv("jigsaw_toxic_comments.csv")   # e.g., columns: "comment_text", "toxic"
+df_fakenews = pd.read_csv("fake_news.csv")              # e.g., columns: "text", "label"
+
+# Standardize column names
+df_toxic.rename(columns={"comment_text": "text", "toxic": "label"}, inplace=True)
+df_fakenews.rename(columns={"text": "text", "label": "label"}, inplace=True)
+
+# Concatenate datasets
+combined_df = pd.concat([df_toxic, df_fakenews], ignore_index=True)
+
+# Define a text cleaning function
+def clean_text(text):
+    text = text.lower()  # Lowercase
+    text = re.sub(r"http\S+|www\S+|https\S+", "", text, flags=re.MULTILINE)  # Remove URLs
+    text = re.sub(r"[^a-z0-9\s]", "", text)  # Remove punctuation/special characters
+    text = re.sub(r"\s+", " ", text).strip()  # Remove extra spaces
+    return text
+
+# Clean the text column
+combined_df['text'] = combined_df['text'].apply(clean_text)
+
+# Remove duplicates and drop missing values
+combined_df.drop_duplicates(subset=["text"], inplace=True)
+combined_df.dropna(subset=["text", "label"], inplace=True)
+
+# Handle class imbalance using SMOTE (if labels are numeric; adjust as needed)
+# Here we assume that a binary classification (e.g., harmful vs. non-harmful) is used.
+X = combined_df['text']
+y = combined_df['label']
+# For demonstration, converting text to a simple bag-of-words representation.
+from sklearn.feature_extraction.text import CountVectorizer
+vectorizer = CountVectorizer()
+X_vectorized = vectorizer.fit_transform(X)
+
+smote = SMOTE(random_state=42)
+X_res, y_res = smote.fit_resample(X_vectorized, y)
+# For training a deep learning model, you may choose to balance the dataset differently.
+# Convert back to a DataFrame if needed.
