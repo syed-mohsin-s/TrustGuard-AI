@@ -1,0 +1,13 @@
+streamlit
+fastapi
+uvicorn
+google-cloud-firestore
+firebase-admin
+google-generativeai
+vaderSentiment
+python-multipart
+python-dotenv
+requests
+pillow
+scikit-learn
+joblib
