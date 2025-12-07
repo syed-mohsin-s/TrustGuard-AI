@@ -20,7 +20,7 @@ genai.configure(api_key=api_key)
 class GuardianModel:
     def __init__(self):
         self.vader = SentimentIntensityAnalyzer()
-        self.gemini = genai.GenerativeModel('gemini-1.5-flash')
+        self.gemini = genai.GenerativeModel('gemini-2.5-flash')
         
         # Load Phishing Model (Layer 3)
         try:
@@ -103,4 +103,5 @@ class GuardianModel:
             "ai_details": ai_analysis,
             "verdict": final_verdict,
             "timestamp": firestore.SERVER_TIMESTAMP
+
         }
